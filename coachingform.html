@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نموذج التدريب الشخصي</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Base site styles -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Additional styles for coaching form page */
+      /* Define accent colors used in this page */
+      :root {
+        /* Use existing theme colors for accent buttons and progress */
+        --accent: var(--h2);
+        --accent-hover: var(--h1);
+      }
+      .coaching-hero {
+        padding: 80px 0 30px;
+        text-align: center;
+        background: var(--secondary-bg);
+      }
+      .language-selection {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .language-selection .lang-btn {
+        padding: 0.7rem 1.3rem;
+        border-radius: 12px;
+        border: 2px solid var(--h1);
+        background: transparent;
+        color: var(--h1);
+        font-weight: 900;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+      }
+      .language-selection .lang-btn:hover {
+        background: rgba(55, 149, 187, 0.15);
+        transform: translateY(-1px);
+      }
+      body.dark .language-selection .lang-btn {
+        border-color: var(--dark-accent);
+        color: var(--dark-accent);
+      }
+      body.dark .language-selection .lang-btn:hover {
+        background: rgba(87, 167, 201, 0.25);
+      }
+      #form-section {
+        margin-top: 40px;
+      }
+      #form-section.hidden {
+        display: none;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 700;
+        color: var(--h1);
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.7rem;
+        border-radius: 8px;
+        border: 1px solid rgba(10, 116, 166, 0.3);
+        font-family: inherit;
+      }
+      .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      .form-group button {
+        margin-top: 20px;
+      }
+      /* Progress bar and steps styles */
+      .progressbar {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        counter-reset: step;
+        /* Display items right-to-left so that step 1 appears on the right */
+        direction: rtl;
+        flex-direction: row;
+      }
+      .progress {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        /* Hide the connecting line between steps. We only use the circles to indicate progress */
+        height: 0;
+        background: transparent;
+        transform: translateY(-50%);
+        z-index: 0;
+        transition: width 0.3s ease;
+        border-radius: 2px;
+        width: 0%;
+      }
+      .progress-step {
+        width: 34px;
+        height: 34px;
+        background: var(--secondary-bg);
+        border-radius: 50%;
+        border: 2px solid var(--h1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        color: var(--h1);
+        font-weight: 700;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        cursor: pointer;
+      }
+      .progress-step::before {
+        /* Display the step number stored in the data-title attribute. Numbers help users know their progress */
+        content: attr(data-title);
+      }
+      .progress-step.progress-step-active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .step {
+        display: none;
+      }
+      .step.step-active {
+        display: block;
+      }
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+      }
+      .next-btn,
+      .prev-btn,
+      .submit-btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: background 0.3s ease, transform 0.2s ease;
+      }
+      .prev-btn {
+        background: var(--secondary-bg);
+        color: var(--h1);
+      }
+      .next-btn:hover,
+      .submit-btn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+      }
+      .prev-btn:hover {
+        background: var(--accent-hover);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+      .question-img {
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header copied from index for consistent navigation and theme toggle -->
+    <header class="site-header">
+      <div class="container nav-wrapper">
+        <a class="logo" href="index.html#home">GYM&nbsp;LABORATORY</a>
+        <nav class="nav-menu" aria-label="التنقل">
+          <a href="index.html#home" class="nav-link">الرئيسية</a>
+          <a href="index.html#ebook" class="nav-link">كتاب</a>
+          <a href="index.html#online" class="nav-link active">التدريب</a>
+          <a href="exercises.html" class="nav-link">مكتبة التمارين</a>
+          <a href="index.html#bmr" class="nav-link">حاسبة&nbsp;السعرات</a>
+          <a href="blog.html" class="nav-link">مدونة</a>
+        </nav>
+        <label class="theme-switch theme-switch--floating" title="الوضع الليلي">
+          <input id="themeToggle" type="checkbox" aria-label="تغيير الوضع" />
+          <span class="theme-slider" aria-hidden="true">
+            <span class="moon">🌙</span>
+            <span class="sun">☀️</span>
+          </span>
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <section class="coaching-hero">
+        <div class="container">
+          <h1 class="section-title">نموذج التدريب الشخصي</h1>
+          <p class="online-description" data-ar-after="هذا النموذج مُفصَّل لجمع كل المعايير الضرورية لمساعدتك على الوصول إلى أهدافك بسرعة وبأمان وتقديم أفضل تجربة تدريب شخصية" data-dar-after="هذا الفورم مفصل باش نجمع كل المعايير باش نعاونك توصل لأهدافك بسرعة وبأمان ونعطيك أحسن تجربة كوتشينغ">
+            مرحبًا! يرجى اختيار اللغة التي تريد استخدامها لملء النموذج.
+            
+            <!-- Add translation attributes for the message shown after language selection. These will be populated in setLanguage() -->
+            
+          </p>
+          <div class="language-selection">
+            <button id="lang-ar" class="lang-btn">الفصحى العربية</button>
+            <button id="lang-dar" class="lang-btn">الدارجة المغربية</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="form-section" class="hidden">
+        <div class="container">
+          <!-- Progress bar -->
+          <div class="progressbar">
+            <div class="progress" id="progress"></div>
+            <div class="progress-step progress-step-active" data-title="1"></div>
+            <div class="progress-step" data-title="2"></div>
+            <div class="progress-step" data-title="3"></div>
+            <div class="progress-step" data-title="4"></div>
+            <div class="progress-step" data-title="5"></div>
+            <div class="progress-step" data-title="6"></div>
+            <div class="progress-step" data-title="7"></div>
+          </div>
+          <form id="coaching-form">
+            <!-- Step 1: Basic Information -->
+            <div class="step step-active">
+              <img class="question-img" src="images/form/q01.png" alt="" />
+              <div class="form-group">
+                <label for="email" data-ar="البريد الإلكتروني *" data-dar="الإيميل *"></label>
+                <input type="email" id="email" required />
+              </div>
+              <div class="form-group">
+                <label for="name" data-ar="الاسم *" data-dar="الإسم *"></label>
+                <input type="text" id="name" required />
+              </div>
+              <div class="form-group">
+                <label for="phone" data-ar="رقم الواتساب *" data-dar="رقم الواتساب *"></label>
+                <input type="tel" id="phone" required />
+              </div>
+              <div class="form-group">
+                <label for="goal" data-ar="ما هو هدفك الرئيسي؟ *" data-dar="شنو هو الهدف الرئيسي ديالك؟ *"></label>
+                <select id="goal" required>
+                  <option value="" disabled selected></option>
+                  <option value="lose_weight" data-ar="فقدان الوزن" data-dar="نقصان الوزن"></option>
+                  <option value="build_muscle" data-ar="بناء العضلات" data-dar="بناء العضلات"></option>
+                  <option value="both" data-ar="فقدان الدهون وبناء العضلات معًا" data-dar="نقصان الدهون وبناء العضلات"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="gender" data-ar="الجنس *" data-dar="الجنس *"></label>
+                <select id="gender" required>
+                  <option value="" disabled selected></option>
+                  <option value="male" data-ar="ذكر" data-dar="ذكر"></option>
+                  <option value="female" data-ar="أنثى" data-dar="أنثى"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="ageGroup" data-ar="الفئة العمرية *" data-dar="الفئة العمرية *"></label>
+                <select id="ageGroup" required>
+                  <option value="" disabled selected></option>
+                  <option value="<20" data-ar="أقل من 20" data-dar="أقل من 20"></option>
+                  <option value="20-29" data-ar="20–29" data-dar="20–29"></option>
+                  <option value="30-39" data-ar="30–39" data-dar="30–39"></option>
+                  <option value="40-49" data-ar="40–49" data-dar="40–49"></option>
+                  <option value="50+" data-ar="50+" data-dar="50+"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="height" data-ar="ما طولك؟ (سم) *" data-dar="الطول ديالك؟ (سم) *"></label>
+                <!-- Restrict height to a normal range for better validation -->
+                <input type="number" id="height" min="100" max="250" step="1" required />
+              </div>
+              <div class="form-group">
+                <label for="weight" data-ar="ما وزنك الحالي؟ (كغ) *" data-dar="الوزن ديالك الحالي؟ (كغ) *"></label>
+                <!-- Restrict weight to a normal range for better validation -->
+                <input type="number" id="weight" min="30" max="200" step="0.1" required />
+              </div>
+              <div class="button-group">
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 2: Body Composition & Goals -->
+            <div class="step">
+              <img class="question-img" src="images/form/q02.png" alt="" />
+              <div class="form-group">
+                <!-- Replace select with interactive body shape image options -->
+                <label data-ar="ما هو شكل جسمك الحالي؟ *" data-dar="شنو هو شكل الجسم ديالك؟ *"></label>
+                <div class="body-shape-options" id="bodyShapeOptions">
+                  <!-- Slender (uses the existing user‑provided image) -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="slender" required />
+                    <img src="images/form/bodyshape_01.jpg" alt="شكل 1" />
+                    <!-- Title below each image; translations provided on the span via data attributes -->
+                    <span class="body-shape-title" data-ar="نحيف" data-dar="نحيف">نحيف</span>
+                  </label>
+                  <!-- Slender Soft -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="slender_soft" required />
+                    <img src="images/form/bodyshape_02.png" alt="شكل 2" />
+                    <span class="body-shape-title" data-ar="نحيف وناعم" data-dar="نحيف وكميش">نحيف وناعم</span>
+                  </label>
+                  <!-- Defined -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="defined" required />
+                    <img src="images/form/bodyshape_03.png" alt="شكل 3" />
+                    <span class="body-shape-title" data-ar="محدد" data-dar="محدد">محدد</span>
+                  </label>
+                  <!-- Athletic -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="athletic" required />
+                    <img src="images/form/bodyshape_04.png" alt="شكل 4" />
+                    <span class="body-shape-title" data-ar="رياضي" data-dar="رياضي">رياضي</span>
+                  </label>
+                  <!-- Bulky -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="bulky" required />
+                    <img src="images/form/bodyshape_05.png" alt="شكل 5" />
+                    <span class="body-shape-title" data-ar="ضخم" data-dar="غليظ">ضخم</span>
+                  </label>
+                  <!-- Soft Heavy -->
+                  <label class="body-shape-option">
+                    <input type="radio" name="bodyShapeOption" value="soft_heavy" required />
+                    <img src="images/form/bodyshape_06.png" alt="شكل 6" />
+                    <span class="body-shape-title" data-ar="ناعم وثقيل" data-dar="كميش وثقيل">ناعم وثقيل</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="bodyFat" data-ar="ما هي نسبة الدهون الحالية؟ *" data-dar="شنو نسبة الذهون ديالك الحالية؟ *"></label>
+                <!-- Show body fat chart image to help choose the percentage -->
+                <img class="bodyfat-chart" src="images/form/bodyfat_chart.jpg" alt="" />
+                <select id="bodyFat" required>
+                  <option value="" disabled selected></option>
+                  <option value="8" data-ar="حوالي 8%" data-dar="حوالي 8%"></option>
+                  <option value="10" data-ar="حوالي 10%" data-dar="حوالي 10%"></option>
+                  <option value="15" data-ar="حوالي 15%" data-dar="حوالي 15%"></option>
+                  <option value="20" data-ar="حوالي 20%" data-dar="حوالي 20%"></option>
+                  <option value="25" data-ar="حوالي 25%" data-dar="حوالي 25%"></option>
+                  <option value="30" data-ar="حوالي 30%" data-dar="حوالي 30%"></option>
+                  <option value="35" data-ar="حوالي 35%" data-dar="حوالي 35%"></option>
+                  <option value="40" data-ar="حوالي 40%" data-dar="حوالي 40%"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="muscleGain" data-ar="كم كيلوغرام ترغب في كسب من العضلات؟ *" data-dar="شحال من كيلوغرام بغيت تزيد دالعضلات؟ *"></label>
+                <select id="muscleGain" required>
+                  <option value="" disabled selected></option>
+                  <option value="2.5" data-ar="2.5 كيلو" data-dar="2.5 كيلو"></option>
+                  <option value="5" data-ar="5 كيلو" data-dar="5 كيلو"></option>
+                  <option value="7.5" data-ar="7.5 كيلو" data-dar="7.5 كيلو"></option>
+                  <option value="10" data-ar="10 كيلو" data-dar="10 كيلو"></option>
+                  <option value="more" data-ar="أكثر إن أمكن" data-dar="أكثر ما يمكن"></option>
+                  <option value="not_sure" data-ar="لست متأكدًا، أنصحني" data-dar="ما عارفش، انصحني"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="trainingHabits" data-ar="كيف تصف عاداتك الحالية في التدريب والتغذية؟ *" data-dar="كيفاش كتوصف عاداتك في التدريب والتغذية؟ *"></label>
+                <select id="trainingHabits" required>
+                  <option value="" disabled selected></option>
+                  <option value="start_zero" data-ar="أبدأ من الصفر" data-dar="غادي نبدأ من البداية"></option>
+                  <option value="good_habits" data-ar="لدي عادات جيدة لكن غير منتظمة" data-dar="عندي عادات مزيانة ولكن ما كنجبدش"></option>
+                  <option value="slow_progress" data-ar="تقدمي بطيء لكن أحاول" data-dar="كنحاول ولكن التقدم بطيء"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="consistencyChallenge" data-ar="ما هو أكثر شيء يؤثر على استمراريتك؟ *" data-dar="شنو أكثر حاجة كتأثر على الاستمرارية ديالك؟ *"></label>
+                <select id="consistencyChallenge" required>
+                  <option value="" disabled selected></option>
+                  <option value="time_commitments" data-ar="التزامات أخرى / ضيق الوقت" data-dar="التزامات أخرى / ما عنديش الوقت"></option>
+                  <option value="plateau_motivation" data-ar="نقص الدافع أو الوصول لمرحلة ثبات" data-dar="نقص الدافع أو الثبات"></option>
+                  <option value="injury_limitations" data-ar="إصابات تحد من قدرتي" data-dar="إصابات كتحد من قدرتي"></option>
+                  <option value="change_programs" data-ar="كثرة تغيير البرامج" data-dar="كنبدل البرامج بزاف"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label data-ar="ما هي المناطق التي يصعب فقدان الدهون فيها؟" data-dar="شنو هي المناطق اللي صعيب تنقص فيها الدهون؟"></label>
+                <div class="checkbox-group" id="fatAreas">
+                  <label><input type="checkbox" value="stomach" /><span data-ar="البطن" data-dar="الكرش"></span></label>
+                  <label><input type="checkbox" value="chest" /><span data-ar="الصدر" data-dar="الصدر"></span></label>
+                  <label><input type="checkbox" value="lower_back" /><span data-ar="أسفل الظهر" data-dar="الظهر لتحت"></span></label>
+                  <label><input type="checkbox" value="legs" /><span data-ar="الساقان" data-dar="الساقين"></span></label>
+                  <label><input type="checkbox" value="arms" /><span data-ar="الذراعان" data-dar="الدرعين"></span></label>
+                  <label><input type="checkbox" value="hips" /><span data-ar="الورك" data-dar="الورك"></span></label>
+                  <label><input type="checkbox" value="sides" /><span data-ar="الجوانب" data-dar="الجوانب"></span></label>
+                  <label><input type="checkbox" value="all_equal" /><span data-ar="الصعوبة بنفس جميعها" data-dar="كلها صعيبة بنفس الدرجة"></span></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label data-ar="ما هي المجموعات العضلية التي تريد التركيز عليها؟" data-dar="شنو هي المجموعات العضلية اللي بغيت تركز عليها؟"></label>
+                <div class="checkbox-group" id="focusMuscles">
+                  <label><input type="checkbox" value="chest" /><span data-ar="الصدر" data-dar="الصدر"></span></label>
+                  <label><input type="checkbox" value="back" /><span data-ar="الظهر" data-dar="الظهر"></span></label>
+                  <label><input type="checkbox" value="arms" /><span data-ar="الذراعان" data-dar="الدرعين"></span></label>
+                  <label><input type="checkbox" value="shoulders" /><span data-ar="الأكتاف" data-dar="الأكتاف"></span></label>
+                  <label><input type="checkbox" value="legs" /><span data-ar="الأرجل" data-dar="الأرجل"></span></label>
+                  <label><input type="checkbox" value="glutes" /><span data-ar="عضلة المؤخرة" data-dar="عضلة المؤخرة"></span></label>
+                  <label><input type="checkbox" value="calves" /><span data-ar="الساقين" data-dar="الساقين"></span></label>
+                  <label><input type="checkbox" value="equal" /><span data-ar="تطوير كل شيء بالتساوي" data-dar="بغيت نطور كل شي بالتساوي"></span></label>
+                </div>
+              </div>
+              <!-- Ask how long the person has been focusing on improving their body -->
+              <div class="form-group">
+                <label for="trainingYears"
+                       data-ar="منذ متى وأنت تركز على تحسين جسمك؟ *"
+                       data-dar="منذ متى وانت كتخدم على تحسين جسمك؟ *"></label>
+                <select id="trainingYears" required>
+                  <!-- Duration options to answer when the person started focusing on body improvement -->
+                  <option value="" disabled selected></option>
+                  <option value="0-6m" data-ar="0–6 أشهر" data-dar="0–6 شهور"></option>
+                  <option value="6-12m" data-ar="6–12 شهر" data-dar="6–12 شهر"></option>
+                  <option value="1-3y" data-ar="1–3 سنوات" data-dar="1–3 سنوات"></option>
+                  <option value="3+y" data-ar="أكثر من 3 سنوات" data-dar="أكثر من 3 سنوات"></option>
+                </select>
+              </div>
+
+              <!-- Add a question about training experience level (gym) -->
+              <div class="form-group">
+                <label for="trainingExperience" data-ar="ما هو مستوى خبرتك في التدريب (الجيم)؟ *"
+                       data-dar="شنو مستوى الخبرة ديالك في التدريب (الجيم)؟ *"></label>
+                <select id="trainingExperience" required>
+                  <option value="" disabled selected></option>
+                  <option value="beginner" data-ar="مبتدئ" data-dar="مبتدئ"></option>
+                  <option value="intermediate" data-ar="متوسط" data-dar="متوسط"></option>
+                  <option value="advanced" data-ar="متقدم" data-dar="متقدم"></option>
+                </select>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 3: Reasons & Motivations -->
+            <div class="step">
+              <img class="question-img" src="images/form/q03.png" alt="" />
+              <div class="form-group">
+                <label data-ar="ما الأسباب الرئيسية لرغبتك في تغيير جسمك؟" data-dar="شنو الأسباب الرئيسية علاش باغي تبدل جسمك؟"></label>
+                <div class="checkbox-group" id="changeReasons">
+                  <label><input type="checkbox" value="confidence" /><span data-ar="زيادة الثقة بالنفس" data-dar="زيادة الثقة بالنفس"></span></label>
+                  <label><input type="checkbox" value="health" /><span data-ar="تحسين الصحة" data-dar="تحسين الصحة"></span></label>
+                  <label><input type="checkbox" value="comfort" /><span data-ar="الشعور بالراحة في جسمي" data-dar="الشعور بالراحة في جسمي"></span></label>
+                  <label><input type="checkbox" value="prove_self" /><span data-ar="إثبات قدرتي لنفسي" data-dar="إثبات قدرتي لنفسي"></span></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <!-- Ask whether the person feels uncomfortable about their body in front of others -->
+                <label for="improvementPeriod"
+                       data-ar="هل تشعر بعدم الارتياح تجاه جسمك أمام الآخرين؟ *"
+                       data-dar="واش كتّحس بعدم الارتياح بجسمك قدام الناس؟ *"></label>
+                <select id="improvementPeriod" required>
+                  <!-- Frequency options to answer how often the person feels uncomfortable -->
+                  <option value="" disabled selected></option>
+                  <option value="mostly" data-ar="أغلب الوقت" data-dar="أغلب الوقت"></option>
+                  <option value="sometimes" data-ar="أحيانًا" data-dar="أحيانًا"></option>
+                  <option value="rarely" data-ar="نادراً / أبداً" data-dar="نادراً / أبداً"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <!-- Update the satisfaction statement: use proper Arabic quotes and punctuation -->
+                <label for="selfSatisfaction"
+                       data-ar="إلى أي درجة تتفق مع العبارة: &ldquo;أنا غير راضٍ عن وضعي الحالي وأعلم أنني قادر على أكثر، وأحتاج خطة أستطيع الوثوق بها&rdquo;؟ *"
+                       data-dar="شحال كتوافق مع العبارة: &ldquo;ما راضيش على وضعي الحالي وعارف يمكن لي نكون حسن، وكنحتاج خطة نقدر نتق فيها&rdquo;؟ *">
+                </label>
+                <select id="selfSatisfaction" required>
+                  <option value="" disabled selected></option>
+                  <option value="1" data-ar="1 - أوافق كثيرًا" data-dar="1 - أوافق كثيرًا"></option>
+                  <option value="2" data-ar="2" data-dar="2"></option>
+                  <option value="3" data-ar="3" data-dar="3"></option>
+                  <option value="4" data-ar="4" data-dar="4"></option>
+                  <option value="5" data-ar="5 - لا أوافق أبدًا" data-dar="5 - لا أوافق أبدًا"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="externalAccountability" data-ar="إلى أي درجة تتفق مع العبارة: “أحتاج إلى تحفيز أو محاسبة خارجية للحفاظ على الاستمرارية”؟ *" data-dar="شحال كتوافق مع العبارة: “كنحتاج تحفيز أو محاسبة خارجية باش نبقى مستمر”؟ *"></label>
+                <select id="externalAccountability" required>
+                  <option value="" disabled selected></option>
+                  <option value="1" data-ar="1 - أوافق كثيرًا" data-dar="1 - أوافق كثيرًا"></option>
+                  <option value="2" data-ar="2" data-dar="2"></option>
+                  <option value="3" data-ar="3" data-dar="3"></option>
+                  <option value="4" data-ar="4" data-dar="4"></option>
+                  <option value="5" data-ar="5 - لا أوافق أبدًا" data-dar="5 - لا أوافق أبدًا"></option>
+                </select>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 4: Programs & Knowledge -->
+            <div class="step">
+              <img class="question-img" src="images/form/q04.png" alt="" />
+              <div class="form-group">
+                <label data-ar="هل جربت أي من البرامج أو الطرق التالية؟" data-dar="جربت شي من هاد البرامج؟"></label>
+                <div class="checkbox-group" id="programsTried">
+                  <label><input type="checkbox" value="online_program" /><span data-ar="برنامج تدريب أونلاين" data-dar="برنامج تدريب أونلاين"></span></label>
+                  <label><input type="checkbox" value="custom_program" /><span data-ar="إنشاء برنامج خاص" data-dar="إنشاء برنامج خاص"></span></label>
+                  <label><input type="checkbox" value="personal_trainer" /><span data-ar="مدرب أو كوتش شخصي" data-dar="مدرب أو كوتش شخصي"></span></label>
+                  <label><input type="checkbox" value="calorie_counting" /><span data-ar="حساب السعرات الحرارية" data-dar="حساب السعرات الحرارية"></span></label>
+                  <label><input type="checkbox" value="keto" /><span data-ar="برنامج كيتو" data-dar="برنامج كيتو"></span></label>
+                  <label><input type="checkbox" value="intermittent_fasting" /><span data-ar="صيام متقطع" data-dar="صيام متقطع"></span></label>
+                  <label><input type="checkbox" value="paid_meal_plans" /><span data-ar="خطط غذائية مدفوعة" data-dar="خطط غذائية مدفوعة"></span></label>
+                  <label><input type="checkbox" value="none" /><span data-ar="لم أجرب أيًا منها" data-dar="ما جربت حتى واحد منها"></span></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="trainingAppUsed" data-ar="هل تستخدم تطبيقًا لتتبع التمارين؟ *" data-dar="كتستخدم تطبيق لتتبع التمارين؟ *"></label>
+                <select id="trainingAppUsed" required>
+                  <option value="" disabled selected></option>
+                  <option value="yes" data-ar="نعم" data-dar="نعم"></option>
+                  <option value="used_before" data-ar="استخدمته سابقًا" data-dar="سبق لي استخدمته"></option>
+                  <option value="no" data-ar="لا" data-dar="لا"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="supplementsPlanned" data-ar="هل تنوي استخدام مكملات مثل البروتين أو الكرياتين؟ *" data-dar="كتخطط تستعمل مكملات بحال البروتين أو الكرياتين؟ *"></label>
+                <select id="supplementsPlanned" required>
+                  <option value="" disabled selected></option>
+                  <option value="yes" data-ar="نعم" data-dar="نعم"></option>
+                  <option value="used_before" data-ar="سبق استخدمته" data-dar="سبق استخدمته"></option>
+                  <option value="no" data-ar="لا" data-dar="لا"></option>
+                  <option value="unsure" data-ar="لست متأكدًا، أنصحني" data-dar="ما عارفش، انصحني"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="knowledgeLevel" data-ar="ما هو مستوى معرفتك بالتدريب والتغذية؟ *" data-dar="شنو مستوى المعرفة ديالك بالتدريب والتغذية؟ *"></label>
+                <select id="knowledgeLevel" required>
+                  <option value="" disabled selected></option>
+                  <option value="expert" data-ar="خبير" data-dar="خبير"></option>
+                  <option value="confused" data-ar="محتار ولكن متحمس" data-dar="محتار ولكن متحمس"></option>
+                  <option value="read_lot" data-ar="أقرأ كثيرًا لكن لا أعرف الصحيح" data-dar="كنقرأ بزاف ولكن ما عارفش الصحيح"></option>
+                  <option value="bro_science" data-ar="جربت برو ساينس وأبحث عن العلم الحقيقي" data-dar="جربت برو ساينس وكندور على العلم الصحيح"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="stepsPerDay" data-ar="كم عدد خطواتك اليومية؟ *" data-dar="شحال كتدير من خطوة يوميًا؟ *"></label>
+                <select id="stepsPerDay" required>
+                  <option value="" disabled selected></option>
+                  <option value="<5000" data-ar="أقل من 5000 خطوة" data-dar="أقل من 5000 خطوة"></option>
+                  <option value="5000-10000" data-ar="5000–10000 خطوة" data-dar="5000–10000 خطوة"></option>
+                  <option value="10000-15000" data-ar="10000–15000 خطوة" data-dar="10000–15000 خطوة"></option>
+                  <option value=">15000" data-ar="أكثر من 15000 خطوة" data-dar="أكثر من 15000 خطوة"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cardioFrequency" data-ar="كم مرة تمارس الكارديو؟ *" data-dar="شحال من مرة كتمارس الكارديو؟ *"></label>
+                <select id="cardioFrequency" required>
+                  <option value="" disabled selected></option>
+                  <option value="rarely" data-ar="نادراً" data-dar="نادراً"></option>
+                  <option value="sometimes" data-ar="أحيانًا" data-dar="أحيانًا"></option>
+                  <option value="often" data-ar="عدة مرات" data-dar="عدة مرات"></option>
+                  <option value="regularly" data-ar="بانتظام" data-dar="بانتظام"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="compoundComfort" data-ar="ما مدى راحتك مع تمارين السكوات والبنش والديدلفت؟ *" data-dar="التجربة ديالك مع تمارين السكوات والبنش والديدلفت؟ *"></label>
+                <select id="compoundComfort" required>
+                  <option value="" disabled selected></option>
+                  <option value="never" data-ar="لم أقم بها من قبل" data-dar="عمرني درتهم"></option>
+                  <option value="learning" data-ar="ما زلت أتعلم" data-dar="ما زلت كنتعلم"></option>
+                  <option value="comfortable" data-ar="أمارسها بانتظام وبراحة" data-dar="كنمارسها بانتظام وبراحة"></option>
+                  <option value="not_suitable" data-ar="غير مناسبة لي بسبب إصابة" data-dar="ما كتناسبنيش بسبب إصابة"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <!-- Clarify the available training days question -->
+                <label data-ar="ما الأيام المتاحة لك للتمرين؟" data-dar="شنو هي الأيام المتاحة لك للتمرين؟"></label>
+                <div class="checkbox-group" id="availableDays">
+                  <label><input type="checkbox" value="monday" /><span data-ar="الإثنين" data-dar="الإثنين"></span></label>
+                  <label><input type="checkbox" value="tuesday" /><span data-ar="الثلاثاء" data-dar="الثلاثاء"></span></label>
+                  <label><input type="checkbox" value="wednesday" /><span data-ar="الأربعاء" data-dar="الأربعاء"></span></label>
+                  <label><input type="checkbox" value="thursday" /><span data-ar="الخميس" data-dar="الخميس"></span></label>
+                  <label><input type="checkbox" value="friday" /><span data-ar="الجمعة" data-dar="الجمعة"></span></label>
+                  <label><input type="checkbox" value="saturday" /><span data-ar="السبت" data-dar="السبت"></span></label>
+                  <label><input type="checkbox" value="sunday" /><span data-ar="الأحد" data-dar="الأحد"></span></label>
+                </div>
+              </div>
+              <!-- Removed the number of workouts per week question; the available days question above covers this information -->
+              <div class="form-group">
+                <label for="sessionDuration" data-ar="ما هي مدة الجلسة المثالية بالنسبة لك؟ *" data-dar="شحال خص يكون طول الحصة بالنسبة ليك؟ *"></label>
+                <select id="sessionDuration" required>
+                  <option value="" disabled selected></option>
+                  <option value="30" data-ar="30 دقيقة" data-dar="30 دقيقة"></option>
+                  <option value="60" data-ar="60 دقيقة" data-dar="60 دقيقة"></option>
+                </select>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 5: Environment & Injuries -->
+            <div class="step">
+              <img class="question-img" src="images/form/q05.png" alt="" />
+              <div class="form-group">
+                <label for="trainingEnvironment" data-ar="ما هي البيئة المتاحة للتدريب؟ *" data-dar="شنو هي البيئة اللي كتدرب فيها؟ *"></label>
+                <select id="trainingEnvironment" required>
+                  <option value="" disabled selected></option>
+                  <option value="full_gym" data-ar="نادي متكامل" data-dar="نادي متكامل"></option>
+                  <option value="limited_gym" data-ar="نادي محدود" data-dar="نادي محدود"></option>
+                  <option value="home_gym" data-ar="صالة منزلية" data-dar="صالة منزلية"></option>
+                  <option value="dumbbells" data-ar="أوزان حرة / دمبلز فقط" data-dar="أوزان حرة / دمبلز فقط"></option>
+                  <option value="bands" data-ar="أربطة مقاومة فقط" data-dar="أربطة مقاومة فقط"></option>
+                  <option value="bodyweight" data-ar="وزن الجسم فقط" data-dar="وزن الجسم فقط"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="injuriesSelect" data-ar="هل لديك إصابات تؤثر على التدريب؟ *" data-dar="عندك إصابات كتأثر على التدريب؟ *"></label>
+                <select id="injuriesSelect" required>
+                  <option value="" disabled selected></option>
+                  <option value="none" data-ar="لا" data-dar="لا"></option>
+                  <option value="shoulder" data-ar="الكتف" data-dar="الكتف"></option>
+                  <option value="elbow" data-ar="المرفق" data-dar="المرفق"></option>
+                  <option value="lower_back" data-ar="أسفل الظهر" data-dar="أسفل الظهر"></option>
+                  <option value="knee" data-ar="الركبة" data-dar="الركبة"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group" id="injuriesOtherGroup" style="display:none;">
+                <label for="injuriesOther" data-ar="فضلا صف الإصابة" data-dar="صف الإصابة من فضلك"></label>
+                <textarea id="injuriesOther" rows="2"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="caloriesRelative" data-ar="كيف تصف تناول السعرات مقارنة بهدفك؟ *" data-dar="كيفاش كتوصف كمية السعرات مقارنة بالهدف ديالك؟ *"></label>
+                <select id="caloriesRelative" required>
+                  <option value="" disabled selected></option>
+                  <option value="unknown" data-ar="لا أعرف" data-dar="ما عارفش"></option>
+                  <option value="much_more" data-ar="أكثر بكثير مما يجب" data-dar="كنتناول بزاف"></option>
+                  <option value="much_less" data-ar="أقل بكثير مما يجب" data-dar="كنتناول قليل بزاف"></option>
+                  <option value="close" data-ar="قريب من الهدف" data-dar="قريب من الهدف"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="proteinRelative" data-ar="كيف تصف تناول البروتين مقارنة بهدفك؟ *" data-dar="كيفاش كتصف كمية البروتين مقارنة بالهدف ديالك؟ *"></label>
+                <select id="proteinRelative" required>
+                  <option value="" disabled selected></option>
+                  <option value="unknown" data-ar="لا أعرف" data-dar="ما عارفش"></option>
+                  <option value="much_more" data-ar="أكثر بكثير مما يجب" data-dar="كنتناول بزاف"></option>
+                  <option value="much_less" data-ar="أقل بكثير مما يجب" data-dar="كنتناول قليل بزاف"></option>
+                  <option value="close" data-ar="قريب من الهدف" data-dar="قريب من الهدف"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label data-ar="ما الصعوبات التي تواجهها في الالتزام بالتغذية؟" data-dar="شنو هي الصعوبات اللي كتواجهها في الالتزام بالتغذية؟"></label>
+                <div class="checkbox-group" id="nutritionDifficulties">
+                  <label><input type="checkbox" value="committed" /><span data-ar="ملتزم غالبًا" data-dar="ملتزم غالبًا"></span></label>
+                  <label><input type="checkbox" value="quality" /><span data-ar="لا أتحكم في جودة الطعام" data-dar="ما كنحكمش في جودة الماكلة"></span></label>
+                  <label><input type="checkbox" value="eat_out" /><span data-ar="أتناول الطعام خارج المنزل كثيرًا" data-dar="كنأكل برا بزاف"></span></label>
+                  <label><input type="checkbox" value="weekends" /><span data-ar="عطلة نهاية الأسبوع" data-dar="عطلة نهاية الأسبوع"></span></label>
+                  <label><input type="checkbox" value="evenings" /><span data-ar="فترات المساء" data-dar="فترات الليل"></span></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="dietaryRestrictions" data-ar="هل لديك حساسية أو قيود غذائية؟ *" data-dar="عندك حساسية أو قيود غذائية؟ *"></label>
+                <select id="dietaryRestrictions" required>
+                  <option value="" disabled selected></option>
+                  <option value="none" data-ar="لا" data-dar="لا"></option>
+                  <option value="dairy_free" data-ar="خالي من منتجات الألبان" data-dar="خالي من منتجات الألبان"></option>
+                  <option value="gluten_free" data-ar="خالي من الغلوتين" data-dar="خالي من الغلوتين"></option>
+                  <option value="vegetarian" data-ar="نباتي" data-dar="نباتي"></option>
+                  <option value="vegan" data-ar="نباتي صارم" data-dar="فيغن"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group" id="restrictionsOtherGroup" style="display:none;">
+                <label for="restrictionsOther" data-ar="فضلا حدد القيود الأخرى" data-dar="حدد القيود الأخرى من فضلك"></label>
+                <textarea id="restrictionsOther" rows="2"></textarea>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 6: Lifestyle & Coaching -->
+            <div class="step">
+              <img class="question-img" src="images/form/q06.png" alt="" />
+              <div class="form-group">
+                <label for="busySchedule" data-ar="كيف تصف انشغالك اليومي؟ *" data-dar="كيفاش كتوصف الانشغال اليومي ديالك؟ *"></label>
+                <select id="busySchedule" required>
+                  <option value="" disabled selected></option>
+                  <option value="very_busy" data-ar="أيَّامي مزدحمة جدًا" data-dar="أيامي مزحومة بزاف"></option>
+                  <option value="sometimes_relax" data-ar="أجد وقتًا للراحة أحيانًا" data-dar="كنلقى الوقت للراحة أحيانًا"></option>
+                  <option value="leave_space" data-ar="أترك مساحة للأولويات" data-dar="كنخلي مساحة للأولويات"></option>
+                  <option value="control_time" data-ar="أتحكم كثيرًا في وقتي" data-dar="كنتحكم بزاف في الوقت ديالي"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="coachingNeeds" data-ar="ما الذي تحتاجه مني كمدرب؟ *" data-dar="شنو اللي كتحتاج مني كمدرب؟ *"></label>
+                <select id="coachingNeeds" required>
+                  <option value="" disabled selected></option>
+                  <option value="personal_tracking" data-ar="تتبع شخصي" data-dar="متابعة شخصية"></option>
+                  <option value="guidance" data-ar="إرشادات تدريبية وغذائية" data-dar="توجيه في التدريب والتغذية"></option>
+                  <option value="both" data-ar="كلاهما معًا" data-dar="الاثنين معًا"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="involveOthers" data-ar="هل تشعر بالراحة في إشراك الآخرين في أهدافك؟ *" data-dar="كتحس بالراحة تشارك الآخرين في أهدافك؟ *"></label>
+                <select id="involveOthers" required>
+                  <option value="" disabled selected></option>
+                  <option value="yes" data-ar="نعم" data-dar="نعم"></option>
+                  <option value="no" data-ar="لا" data-dar="لا"></option>
+                  <option value="depends" data-ar="حسب الظروف" data-dar="حسب الظروف"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="supportPerson" data-ar="من هو الشخص الذي يدعمك أكثر؟ *" data-dar="شكون الشخص اللي كيدعمك أكثر؟ *"></label>
+                <select id="supportPerson" required>
+                  <option value="" disabled selected></option>
+                  <option value="partner" data-ar="شريك الحياة" data-dar="شريك الحياة"></option>
+                  <option value="parent" data-ar="أحد الوالدين" data-dar="أحد الوالدين"></option>
+                  <option value="sibling" data-ar="أخ أو أخت" data-dar="أخ أو أخت"></option>
+                  <option value="friend" data-ar="صديق أو صديقة" data-dar="صديق أو صديقة"></option>
+                  <option value="colleague" data-ar="زميل أو زميلة" data-dar="زميل أو زميلة"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pageFollowingDuration" data-ar="منذ متى تتابع صفحة GYMLABO؟ *" data-dar="منذ متى كتتابع صفحة GYMLABO؟ *"></label>
+                <select id="pageFollowingDuration" required>
+                  <option value="" disabled selected></option>
+                  <option value="not_following" data-ar="لا أتابعها" data-dar="ما كنتابعهاش"></option>
+                  <option value="discovered_recently" data-ar="اكتشفتها حديثًا" data-dar="اكتشفتها حديثًا"></option>
+                  <option value="<6m" data-ar="أقل من 6 أشهر" data-dar="أقل من 6 أشهر"></option>
+                  <option value="6-12m" data-ar="6–12 شهر" data-dar="6–12 شهر"></option>
+                  <option value="1-2y" data-ar="1–2 سنة" data-dar="1–2 سنة"></option>
+                  <option value=">2y" data-ar="أكثر من سنتين" data-dar="أكثر من سنتين"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label data-ar="ما المجال الذي يهمك أكثر؟" data-dar="شنو هو المجال اللي كيهمك أكثر؟"></label>
+                <div class="checkbox-group" id="interestFields">
+                  <label><input type="checkbox" value="nutrition" /><span data-ar="التغذية" data-dar="التغذية"></span></label>
+                  <label><input type="checkbox" value="training" /><span data-ar="التدريب" data-dar="التدريب"></span></label>
+                  <label><input type="checkbox" value="habits" /><span data-ar="بناء العادات" data-dar="بناء العادات"></span></label>
+                  <label><input type="checkbox" value="additional_questions" /><span data-ar="أسئلة إضافية" data-dar="أسئلة إضافية"></span></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <!-- Clarify that the supplements in question are pre‑workout powders -->
+                <label for="preWorkoutUse" data-ar="هل تستخدم مكملات قبل التمرين (Pre‑Workout)؟ *" data-dar="كتستعمل مكمل قبل التمرين (Pre‑Workout)؟ *"></label>
+                <select id="preWorkoutUse" required>
+                  <option value="" disabled selected></option>
+                  <option value="almost_every_time" data-ar="نعم، تقريبًا كل مرة" data-dar="نعم، تقريبًا كل مرة"></option>
+                  <option value="sometimes" data-ar="أحيانًا" data-dar="أحيانًا"></option>
+                  <option value="no" data-ar="لا" data-dar="لا"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="preferredTrainingTime" data-ar="متى تفضل التمرين؟ *" data-dar="فوقاش كيعجبك تتريني؟ *"></label>
+                <select id="preferredTrainingTime" required>
+                  <option value="" disabled selected></option>
+                  <option value="morning" data-ar="صباحًا" data-dar="الصباح"></option>
+                  <option value="evening" data-ar="مساءً" data-dar="العشية"></option>
+                  <option value="other" data-ar="أخرى" data-dar="أخرى"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="sleepHours" data-ar="كم ساعة تنام يوميًا في المتوسط؟ *" data-dar="شحال كتنعس فاليوم؟ *"></label>
+                <select id="sleepHours" required>
+                  <option value="" disabled selected></option>
+                  <option value="<6" data-ar="أقل من 6 ساعات" data-dar="أقل من 6 ساعات"></option>
+                  <option value="6-7" data-ar="6–7 ساعات" data-dar="6–7 ساعات"></option>
+                  <option value=">8" data-ar="8 ساعات أو أكثر" data-dar="8 ساعات أو أكثر"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="financialAbility" data-ar="هل لديك القدرة المادية لاتباع برنامج غذائي؟ *" data-dar="قادر ماديا تتبع برنامج غذائي؟ *"></label>
+                <select id="financialAbility" required>
+                  <option value="" disabled selected></option>
+                  <option value="yes" data-ar="نعم" data-dar="نعم"></option>
+                  <option value="no" data-ar="لا" data-dar="لا"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="lifestyleAdditional" data-ar="أي معلومات إضافية عن نمط حياتك" data-dar="شي معلومات إضافية عن نمط حياتك"></label>
+                <textarea id="lifestyleAdditional" rows="3"></textarea>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="button" class="next-btn">التالي</button>
+              </div>
+            </div>
+            <!-- Step 7: Additional Info & Submit -->
+            <div class="step">
+              <img class="question-img" src="images/form/q07.png" alt="" />
+              <div class="form-group">
+                <label for="additionalInfo" data-ar="هل لديك أي معلومات أو ملاحظات إضافية؟" data-dar="عندك شي معلومات أو ملاحظات إضافية؟"></label>
+                <textarea id="additionalInfo" rows="4"></textarea>
+              </div>
+
+              <!-- Offer selection question -->
+              <div class="form-group">
+                <label data-ar="ما العرض الذي اخترته؟ *"
+                       data-dar="شنو العرض اللي بغيتي تختار؟ *"></label>
+                <!-- Use plan icon style with popup details on hover -->
+                <div class="plan-icons-grid offer-options" id="offerOptions">
+                  <!-- Basic plan -->
+                  <label class="plan-icon offer-option plan-basic">
+                    <input type="radio" name="offer" value="basic" required />
+                    <div class="icon-circle"><span class="icon-emoji">📦</span></div>
+                    <span class="plan-label">BASIC</span>
+                    <!-- Hidden span used to map selected offer to its translated name. This is not displayed to the user. -->
+                    <span class="offer-title" data-ar="الباقة الأساسية" data-dar="الباقة الأساسية" style="display:none"></span>
+                    <div class="plan-popup" role="dialog">
+                      <h3 data-ar="الباقة الأساسية" data-dar="الباقة الأساسية">الباقة الأساسية</h3>
+                      <!-- Updated price for Basic plan -->
+                      <p class="plan-price"><span>dh 500</span> <small data-ar="مرة واحدة" data-dar="مرة واحدة">مرة واحدة</small></p>
+                      <ul class="plan-features">
+                        <li data-ar="برنامج تدريب شخصي" data-dar="برنامج تدريب شخصي">برنامج تدريب شخصي</li>
+                        <li data-ar="برنامج تغذية شخصي" data-dar="برنامج تغذية شخصي">برنامج تغذية شخصي</li>
+                        <li data-ar="Check‑in مرة فالاسبوع" data-dar="Check‑in مرة فالاسبوع">Check‑in مرة فالاسبوع</li>
+                      </ul>
+                    </div>
+                  </label>
+                  <!-- Standard plan -->
+                  <label class="plan-icon offer-option plan-standard">
+                    <input type="radio" name="offer" value="standard" required />
+                    <div class="icon-circle"><span class="icon-emoji">⭐</span></div>
+                    <span class="plan-label">STANDARD</span>
+                    <!-- Hidden span used to map selected offer to its translated name. -->
+                    <span class="offer-title" data-ar="الباقة المتوسطة" data-dar="الباقة المتوسطة" style="display:none"></span>
+                    <div class="plan-popup" role="dialog">
+                      <h3 data-ar="الباقة المتوسطة" data-dar="الباقة المتوسطة">الباقة المتوسطة</h3>
+                      <!-- Updated price for Standard plan -->
+                      <p class="plan-price"><span>dh 800</span> <small data-ar="في الشهر" data-dar="في الشهر">في الشهر</small></p>
+                      <ul class="plan-features">
+                        <li data-ar="برنامج تدريب شخصي" data-dar="برنامج تدريب شخصي">برنامج تدريب شخصي</li>
+                        <li data-ar="برنامج تغذية شخصي" data-dar="برنامج تغذية شخصي">برنامج تغذية شخصي</li>
+                        <li data-ar="Check‑in أسبوعي مفصل" data-dar="Check‑in أسبوعي مفصل">Check‑in أسبوعي مفصل</li>
+                        <li data-ar="تعديلات أسبوعية (تدريب + تغذية)" data-dar="تعديلات أسبوعية (تدريب + تغذية)">تعديلات أسبوعية (تدريب + تغذية)</li>
+                        <li data-ar="دعم واتساب 5 أيام فالاسبوع (12h رد)" data-dar="دعم واتساب 5 أيام فالاسبوع (12h رد)">دعم واتساب 5 أيام فالاسبوع (12h رد)</li>
+                      </ul>
+                    </div>
+                  </label>
+                  <!-- Premium VIP plan -->
+                  <label class="plan-icon offer-option plan-vip">
+                    <input type="radio" name="offer" value="premium_vip" required />
+                    <div class="icon-circle"><span class="icon-emoji">🏆</span></div>
+                    <span class="plan-label">PREMIUM&nbsp;VIP</span>
+                    <!-- Hidden span used to map selected offer to its translated name. -->
+                    <span class="offer-title" data-ar="الباقة المميزة" data-dar="الباقة المميزة" style="display:none"></span>
+                    <div class="plan-popup" role="dialog">
+                      <h3 data-ar="الباقة المميزة" data-dar="الباقة المميزة">الباقة المميزة</h3>
+                      <!-- Updated price for Premium VIP plan -->
+                      <p class="plan-price"><span>dh 1500</span> <small data-ar="في الشهر" data-dar="في الشهر">في الشهر</small></p>
+                      <ul class="plan-features">
+                        <li data-ar="كلشي اللي ف Standard +" data-dar="كلشي اللي ف Standard +">كلشي اللي ف Standard +</li>
+                        <li data-ar="رود سريعة (6–12h)" data-dar="رود سريعة (6–12h)">رود سريعة (6–12h)</li>
+                        <li data-ar="تصحيح تقنية التمارين (فيديو)" data-dar="تصحيح تقنية التمارين (فيديو)">تصحيح تقنية التمارين (فيديو)</li>
+                        <li data-ar="تعديلات في وقت سفر/ضغط/رمضان" data-dar="تعديلات في وقت سفر/ضغط/رمضان">تعديلات في وقت سفر/ضغط/رمضان</li>
+                        <li data-ar="أولوية للمتابعة + دعم يومي" data-dar="أولوية للمتابعة + دعم يومي">أولوية للمتابعة + دعم يومي</li>
+                      </ul>
+                    </div>
+                  </label>
+                  <!-- Not sure plan -->
+                  <label class="plan-icon offer-option plan-not-sure">
+                    <input type="radio" name="offer" value="not_sure" required />
+                    <div class="icon-circle"><span class="icon-emoji">❓</span></div>
+                    <span class="plan-label">NOT&nbsp;SURE</span>
+                    <!-- Hidden span used to map selected offer to its translated name. -->
+                    <span class="offer-title" data-ar="غير متأكد بعد" data-dar="ما زال ما قررتش" style="display:none"></span>
+                    <div class="plan-popup" role="dialog">
+                      <h3 data-ar="غير متأكد بعد" data-dar="ما زال ما قررتش">غير متأكد بعد</h3>
+                      <p class="plan-price"><span>—</span> <small data-ar="" data-dar=""></small></p>
+                      <ul class="plan-features">
+                        <li data-ar="يمكنك تحديد العرض لاحقًا" data-dar="يمكنك تحديد العرض لاحقًا">يمكنك تحديد العرض لاحقًا</li>
+                      </ul>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="button-group">
+                <button type="button" class="prev-btn">السابق</button>
+                <button type="submit" class="submit-btn">إرسال النموذج</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Thank you message shown after submission -->
+      <section id="thankYouMessage" class="hidden">
+        <div class="container">
+          <h2 class="section-title" data-ar="شكرًا! سأتواصل معك في أقرب وقت." data-dar="شكرا! غادي نتاصل بك في أقرب وقت">شكرًا! سأتواصل معك في أقرب وقت.</h2>
+          <p class="online-description" data-ar="تم إرسال معلوماتك بنجاح. سأراسلك بأسرع ما يمكن." data-dar="تم إرسال معلوماتك بنجاح. غادي نتاصل بك في أقرب وقت ممكن." >تم إرسال معلوماتك بنجاح. سأراسلك بأسرع ما يمكن.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- jsPDF library to generate PDF results -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas library for capturing DOM as image for PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+      // Newsletter success handler function to show a thank you message after form submission.
+      function newsletterSuccess() {
+        const msgEl = document.getElementById('newsletter-success');
+        if (msgEl) {
+          msgEl.textContent = 'شكراً على الاشتراك!';
+          msgEl.style.display = 'block';
+          setTimeout(() => {
+            msgEl.style.display = 'none';
+          }, 4000);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        // Theme toggle initialization
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme');
+        const darkPref =
+          savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.body.classList.toggle('dark', darkPref);
+        themeToggle.checked = darkPref;
+        themeToggle.addEventListener('change', () => {
+          const isDark = themeToggle.checked;
+          document.body.classList.toggle('dark', isDark);
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        const langSelection = document.querySelector('.language-selection');
+        const formSection = document.getElementById('form-section');
+        const form = document.getElementById('coaching-form');
+        const steps = Array.from(document.querySelectorAll('.step'));
+        const progress = document.getElementById('progress');
+        const progressSteps = Array.from(document.querySelectorAll('.progress-step'));
+        let currentStep = 0;
+        let currentLang = null;
+
+        // Make the progress steps clickable so users can revisit previous steps easily
+        progressSteps.forEach((ps, idx) => {
+          ps.style.cursor = 'pointer';
+          ps.addEventListener('click', () => {
+            // Only allow navigating to steps that have already been visited
+            if (idx <= currentStep) {
+              currentStep = idx;
+              showStep();
+            }
+          });
+        });
+
+        // Highlight the selected body shape image option when chosen
+        const bodyShapeOptionsEl = document.getElementById('bodyShapeOptions');
+        if (bodyShapeOptionsEl) {
+          const radios = bodyShapeOptionsEl.querySelectorAll('input[type="radio"]');
+          radios.forEach((radio) => {
+            radio.addEventListener('change', function () {
+              bodyShapeOptionsEl.querySelectorAll('label').forEach((lbl) => lbl.classList.remove('selected'));
+              this.parentElement.classList.add('selected');
+            });
+          });
+        }
+
+        // Highlight the selected offer option when chosen
+        const offerOptionsEl = document.getElementById('offerOptions');
+        if (offerOptionsEl) {
+          const offers = offerOptionsEl.querySelectorAll('input[type="radio"]');
+          offers.forEach((radio) => {
+            radio.addEventListener('change', function () {
+              offerOptionsEl.querySelectorAll('label').forEach((lbl) => lbl.classList.remove('selected'));
+              this.parentElement.classList.add('selected');
+            });
+          });
+
+          // --------------------------------------------------------------
+          // Mobile/touch support for plan popup details
+          //
+          // On mobile there is no hover state, so we toggle an `.expanded` class
+          // on the tapped label to reveal its plan-popup. We also close any
+          // other popups when selecting a new one, and collapse all popups when
+          // clicking elsewhere on the document. This logic does not affect
+          // desktop behaviour, where hover still works due to CSS.
+          const offerLabels = offerOptionsEl.querySelectorAll('label.plan-icon');
+          offerLabels.forEach((lbl) => {
+            lbl.addEventListener('click', function (e) {
+              // Prevent the global click listener from immediately closing this popup
+              e.stopPropagation();
+              // Remove `expanded` from other plan icons
+              offerLabels.forEach((other) => {
+                if (other !== this) other.classList.remove('expanded');
+              });
+              // Toggle expanded class on this label
+              this.classList.toggle('expanded');
+            });
+          });
+          // Click anywhere outside the plan icons collapses all popups
+          document.addEventListener('click', function (e) {
+            if (!e.target.closest('#offerOptions .plan-icon')) {
+              offerLabels.forEach((lbl) => lbl.classList.remove('expanded'));
+            }
+          });
+        }
+
+        // Update text for all elements having data-ar / data-dar
+        function updateTranslations() {
+          const elements = document.querySelectorAll('[data-ar]');
+          elements.forEach((el) => {
+            const text = el.getAttribute('data-' + currentLang);
+            if (text !== null) {
+              el.textContent = text;
+            }
+          });
+        }
+
+        function showStep() {
+          steps.forEach((stepEl, idx) => {
+            stepEl.classList.toggle('step-active', idx === currentStep);
+          });
+          const progressWidth = (currentStep / (steps.length - 1)) * 100;
+          progress.style.width = progressWidth + '%';
+          progressSteps.forEach((ps, idx) => {
+            if (idx <= currentStep) {
+              ps.classList.add('progress-step-active');
+            } else {
+              ps.classList.remove('progress-step-active');
+            }
+          });
+
+          // Automatically scroll the page to the top when switching steps so the user starts at the new question
+          try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch (e) {
+            window.scrollTo(0, 0);
+          }
+        }
+
+        function handleNext() {
+          const current = steps[currentStep];
+          const inputs = current.querySelectorAll('input, select, textarea');
+          for (const input of inputs) {
+            if (!input.checkValidity()) {
+              input.reportValidity();
+              return;
+            }
+          }
+          if (currentStep < steps.length - 1) {
+            currentStep++;
+            showStep();
+          }
+        }
+        function handlePrev() {
+          if (currentStep > 0) {
+            currentStep--;
+            showStep();
+          }
+        }
+        // Attach next/prev handlers
+        document.querySelectorAll('.next-btn').forEach((btn) => btn.addEventListener('click', handleNext));
+        document.querySelectorAll('.prev-btn').forEach((btn) => btn.addEventListener('click', handlePrev));
+
+        function setLanguage(lang) {
+          currentLang = lang;
+          langSelection.style.display = 'none';
+          formSection.classList.remove('hidden');
+          // After selecting language, replace the description with a more professional note about the detailed form.
+          const descEl = document.querySelector('.online-description');
+          if (descEl) {
+            const afterText = descEl.getAttribute('data-' + lang + '-after');
+            if (afterText) {
+              descEl.textContent = afterText;
+            }
+          }
+          updateTranslations();
+          showStep();
+        }
+        document.getElementById('lang-ar').addEventListener('click', () => setLanguage('ar'));
+        document.getElementById('lang-dar').addEventListener('click', () => setLanguage('dar'));
+
+        // Show/hide extra input for injuries and diet
+        const injuriesSelect = document.getElementById('injuriesSelect');
+        if (injuriesSelect) {
+          injuriesSelect.addEventListener('change', function () {
+            document.getElementById('injuriesOtherGroup').style.display = this.value === 'other' ? 'block' : 'none';
+          });
+        }
+        const dietarySelect = document.getElementById('dietaryRestrictions');
+        if (dietarySelect) {
+          dietarySelect.addEventListener('change', function () {
+            document.getElementById('restrictionsOtherGroup').style.display = this.value === 'other' ? 'block' : 'none';
+          });
+        }
+
+        // If the user selects the "all equal" option in the fat areas group,
+        // automatically check all other options. Similarly for the focus muscles group.
+        const fatAreasGroup = document.getElementById('fatAreas');
+        if (fatAreasGroup) {
+          fatAreasGroup.addEventListener('change', function () {
+            const allEqual = this.querySelector('input[value="all_equal"]');
+            if (allEqual && allEqual.checked) {
+              this.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                cb.checked = true;
+              });
+            }
+          });
+        }
+        const focusMusclesGroup = document.getElementById('focusMuscles');
+        if (focusMusclesGroup) {
+          focusMusclesGroup.addEventListener('change', function () {
+            const equal = this.querySelector('input[value="equal"]');
+            if (equal && equal.checked) {
+              this.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+                cb.checked = true;
+              });
+            }
+          });
+        }
+
+        function getCheckboxValues(groupId) {
+          const group = document.getElementById(groupId);
+          if (!group) return '';
+          const vals = Array.from(group.querySelectorAll('input:checked')).map((cb) =>
+            cb.nextElementSibling.getAttribute('data-' + currentLang)
+          );
+          return vals.join(', ');
+        }
+
+        function getSelectValue(id) {
+          const el = document.getElementById(id);
+          if (!el || !el.value) return '';
+          const selected = el.selectedOptions[0];
+          const txt = selected.getAttribute('data-' + currentLang);
+          return txt || '';
+        }
+
+        // Retrieve the selected body shape based on the custom image radio inputs
+        function getBodyShape() {
+          const selected = document.querySelector('.body-shape-options input[type="radio"]:checked');
+          if (!selected) return '';
+          // look at the parent label for the translation values
+          const label = selected.closest('label');
+          if (!label) return '';
+          // Each label has a data attribute with translations stored on the input element if needed
+          // For translation we can store the readable text on a custom data attribute on the input
+          const optionValue = selected.value;
+          // Map values to translation text, matching the original select options
+          const translationMap = {
+            slender: { ar: 'نحيف', dar: 'نحيف' },
+            slender_soft: { ar: 'نحيف وناعم', dar: 'نحيف وكميش' },
+            defined: { ar: 'محدد', dar: 'محدد' },
+            athletic: { ar: 'رياضي', dar: 'رياضي' },
+            bulky: { ar: 'ضخم', dar: 'غليظ' },
+            soft_heavy: { ar: 'ناعم وثقيل', dar: 'كميش وثقيل' },
+          };
+          const mapping = translationMap[optionValue] || {};
+          return mapping[currentLang] || '';
+        }
+
+        function collectFormData() {
+          return {
+            email: document.getElementById('email').value,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            goal: getSelectValue('goal'),
+            gender: getSelectValue('gender'),
+            ageGroup: getSelectValue('ageGroup'),
+            height: document.getElementById('height').value,
+            weight: document.getElementById('weight').value,
+            bodyShape: getBodyShape(),
+            bodyFat: getSelectValue('bodyFat'),
+            muscleGain: getSelectValue('muscleGain'),
+            trainingHabits: getSelectValue('trainingHabits'),
+            consistencyChallenge: getSelectValue('consistencyChallenge'),
+            fatAreas: getCheckboxValues('fatAreas'),
+            focusMuscles: getCheckboxValues('focusMuscles'),
+            trainingYears: getSelectValue('trainingYears'),
+            trainingExperience: getSelectValue('trainingExperience'),
+            changeReasons: getCheckboxValues('changeReasons'),
+            improvementPeriod: getSelectValue('improvementPeriod'),
+            selfSatisfaction: getSelectValue('selfSatisfaction'),
+            externalAccountability: getSelectValue('externalAccountability'),
+            programsTried: getCheckboxValues('programsTried'),
+            trainingAppUsed: getSelectValue('trainingAppUsed'),
+            supplementsPlanned: getSelectValue('supplementsPlanned'),
+            knowledgeLevel: getSelectValue('knowledgeLevel'),
+            stepsPerDay: getSelectValue('stepsPerDay'),
+            cardioFrequency: getSelectValue('cardioFrequency'),
+            compoundComfort: getSelectValue('compoundComfort'),
+            availableDays: getCheckboxValues('availableDays'),
+            sessionDuration: getSelectValue('sessionDuration'),
+            trainingEnvironment: getSelectValue('trainingEnvironment'),
+            injuriesSelect: getSelectValue('injuriesSelect'),
+            injuriesOther: document.getElementById('injuriesOther') ? document.getElementById('injuriesOther').value : '',
+            caloriesRelative: getSelectValue('caloriesRelative'),
+            proteinRelative: getSelectValue('proteinRelative'),
+            nutritionDifficulties: getCheckboxValues('nutritionDifficulties'),
+            dietaryRestrictions: getSelectValue('dietaryRestrictions'),
+            restrictionsOther: document.getElementById('restrictionsOther')
+              ? document.getElementById('restrictionsOther').value
+              : '',
+            busySchedule: getSelectValue('busySchedule'),
+            coachingNeeds: getSelectValue('coachingNeeds'),
+            involveOthers: getSelectValue('involveOthers'),
+            supportPerson: getSelectValue('supportPerson'),
+            pageFollowingDuration: getSelectValue('pageFollowingDuration'),
+            interestFields: getCheckboxValues('interestFields'),
+            preWorkoutUse: getSelectValue('preWorkoutUse'),
+            preferredTrainingTime: getSelectValue('preferredTrainingTime'),
+            sleepHours: getSelectValue('sleepHours'),
+            financialAbility: getSelectValue('financialAbility'),
+            lifestyleAdditional: document.getElementById('lifestyleAdditional')
+              ? document.getElementById('lifestyleAdditional').value
+              : '',
+            additionalInfo: document.getElementById('additionalInfo') ? document.getElementById('additionalInfo').value : '',
+            offerChoice: (function() {
+              const selected = document.querySelector('#offerOptions input[type="radio"]:checked');
+              if (!selected) return '';
+              // Each plan label has a hidden span.offer-title with translations for Arabic/Darija
+              const titleSpan = selected.parentElement.querySelector('.offer-title');
+              if (titleSpan) {
+                const translated = titleSpan.getAttribute('data-' + currentLang);
+                return translated || '';
+              }
+              return '';
+            })(),
+          };
+        }
+
+        const labelsForPdf = {
+          ar: {
+            email: 'البريد الإلكتروني',
+            name: 'الاسم',
+            phone: 'رقم الواتساب',
+            goal: 'الهدف الرئيسي',
+            gender: 'الجنس',
+            ageGroup: 'الفئة العمرية',
+            height: 'الطول (سم)',
+            weight: 'الوزن (كغ)',
+            bodyShape: 'شكل الجسم الحالي',
+            bodyFat: 'نسبة الدهون',
+            muscleGain: 'زيادة العضلات (كغ)',
+            trainingHabits: 'عادات التدريب والتغذية',
+            consistencyChallenge: 'العوامل المؤثرة على الاستمرارية',
+            fatAreas: 'مناطق صعبة لفقدان الدهون',
+            focusMuscles: 'المجموعات العضلية المستهدفة',
+            // Ask how long the respondent has been focusing on improving their body
+            trainingYears: 'منذ متى وأنت تركز على تحسين جسمك؟',
+            // Level of experience in gym training
+            trainingExperience: 'مستوى الخبرة في التدريب',
+            changeReasons: 'أسباب تغيير الجسم',
+            // Ask whether the respondent feels uncomfortable about their body in front of others
+            improvementPeriod: 'هل تشعر بعدم الارتياح تجاه جسمك أمام الآخرين؟',
+            selfSatisfaction: 'درجة رضا الذات',
+            externalAccountability: 'الحاجة للمحاسبة الخارجية',
+            programsTried: 'البرامج المجربة',
+            trainingAppUsed: 'استخدام التطبيقات',
+            supplementsPlanned: 'استخدام المكملات',
+            knowledgeLevel: 'مستوى المعرفة',
+            stepsPerDay: 'عدد الخطوات اليومية',
+            cardioFrequency: 'تكرار الكارديو',
+            compoundComfort: 'الراحة مع التمارين المركبة',
+            availableDays: 'الأيام المتاحة للتدريب',
+            sessionDuration: 'مدة الجلسة',
+            trainingEnvironment: 'بيئة التدريب',
+            injuriesSelect: 'الإصابات',
+            injuriesOther: 'تفاصيل الإصابات',
+            caloriesRelative: 'تناول السعرات',
+            proteinRelative: 'تناول البروتين',
+            nutritionDifficulties: 'صعوبات الالتزام بالتغذية',
+            dietaryRestrictions: 'القيود الغذائية',
+            restrictionsOther: 'قيود أخرى',
+            busySchedule: 'انشغال اليومي',
+            coachingNeeds: 'حاجات التدريب',
+            involveOthers: 'مشاركة الآخرين',
+            supportPerson: 'الداعم الأكبر',
+            pageFollowingDuration: 'مدة متابعة الصفحة',
+            interestFields: 'المجالات التي تهمك',
+            preWorkoutUse: 'استخدام مكمل قبل التمرين (Pre‑Workout)',
+            preferredTrainingTime: 'وقت التمرين المفضل',
+            sleepHours: 'عدد ساعات النوم',
+            financialAbility: 'القدرة المادية',
+            lifestyleAdditional: 'معلومات عن نمط الحياة',
+            additionalInfo: 'معلومات أو ملاحظات إضافية',
+            offerChoice: 'العرض المختار',
+          },
+          dar: {
+            email: 'الإيميل',
+            name: 'الإسم',
+            phone: 'رقم الواتساب',
+            goal: 'الهدف الرئيسي',
+            gender: 'الجنس',
+            ageGroup: 'الفئة العمرية',
+            height: 'الطول (سم)',
+            weight: 'الوزن (كغ)',
+            bodyShape: 'شكل الجسم الحالي',
+            bodyFat: 'نسبة الذهون',
+            muscleGain: 'زيادة العضلات (كغ)',
+            trainingHabits: 'عادات التدريب والتغذية',
+            consistencyChallenge: 'العوامل المؤثرة على الاستمرارية',
+            fatAreas: 'المناطق الصعيبة لفقدان الدهون',
+            focusMuscles: 'المجموعات العضلية المستهدفة',
+            // Darija translation of "منذ متى وأنت تركز على تحسين جسمك؟"
+            trainingYears: 'منذ متى وانت كتخدم على تحسين جسمك؟',
+            // Darija translation of training experience level
+            trainingExperience: 'مستوى الخبرة في التدريب',
+            changeReasons: 'الأسباب لتغيير الجسم',
+            // Darija translation of "هل تشعر بعدم الارتياح تجاه جسمك أمام الآخرين؟"
+            improvementPeriod: 'واش كتّحس بعدم الارتياح بجسمك قدام الناس؟',
+            selfSatisfaction: 'درجة رضا الذات',
+            externalAccountability: 'الحاجة للمحاسبة الخارجية',
+            programsTried: 'البرامج المجربة',
+            trainingAppUsed: 'استعمال التطبيقات',
+            supplementsPlanned: 'استعمال المكملات',
+            knowledgeLevel: 'مستوى المعرفة',
+            stepsPerDay: 'عدد الخطوات اليومية',
+            cardioFrequency: 'تكرار الكارديو',
+            compoundComfort: 'الراحة مع التمارين المركبة',
+            availableDays: 'أيام التدريب المتاحة',
+            sessionDuration: 'مدة الحصة',
+            trainingEnvironment: 'بيئة التدريب',
+            injuriesSelect: 'الإصابات',
+            injuriesOther: 'تفاصيل الإصابات',
+            caloriesRelative: 'تناول السعرات',
+            proteinRelative: 'تناول البروتين',
+            nutritionDifficulties: 'صعوبات الالتزام بالتغذية',
+            dietaryRestrictions: 'قيود غذائية',
+            restrictionsOther: 'قيود أخرى',
+            busySchedule: 'انشغال اليومي',
+            coachingNeeds: 'ما تحتاجه من التدريب',
+            involveOthers: 'مشاركة الآخرين',
+            supportPerson: 'الشخص الداعم',
+            pageFollowingDuration: 'مدة متابعة الصفحة',
+            interestFields: 'المجالات التي تهمك',
+            preWorkoutUse: 'استعمال مكمل قبل التمرين (Pre‑Workout)',
+            preferredTrainingTime: 'وقت التمرين المفضل',
+            sleepHours: 'عدد ساعات النوم',
+            financialAbility: 'القدرة المادية',
+            lifestyleAdditional: 'معلومات عن نمط الحياة',
+            additionalInfo: 'معلومات أو ملاحظات إضافية',
+            offerChoice: 'العرض المختار',
+          },
+        };
+
+        async function generatePdfFile(data) {
+          // Build a hidden container with the form results formatted in Arabic/Darija
+          const container = document.createElement('div');
+          container.style.position = 'absolute';
+          container.style.left = '-9999px';
+          container.style.top = '-9999px';
+          container.style.width = '210mm';
+          container.style.maxWidth = '800px';
+          container.style.fontFamily = currentLang === 'ar' ? 'Tajawal, sans-serif' : 'Tajawal, sans-serif';
+          // set direction rtl for both languages for consistency in Arabic script
+          container.style.direction = 'rtl';
+          // Title
+          const titleEl = document.createElement('h2');
+          titleEl.style.textAlign = 'center';
+          titleEl.style.marginBottom = '12px';
+          titleEl.textContent = currentLang === 'ar' ? 'نتائج نموذج التدريب الشخصي' : 'نتائج نموذج التدريب الشخصي';
+          container.appendChild(titleEl);
+          // Build list of data entries
+          const list = document.createElement('div');
+          list.style.fontSize = '14px';
+          list.style.lineHeight = '1.6';
+          // each entry as paragraph
+          Object.keys(data).forEach((key) => {
+            if (!labelsForPdf[currentLang][key]) return;
+            const label = labelsForPdf[currentLang][key];
+            const value = data[key] || '';
+            const p = document.createElement('p');
+            p.textContent = `${label}: ${value}`;
+            list.appendChild(p);
+          });
+          container.appendChild(list);
+          document.body.appendChild(container);
+          // Capture using html2canvas at high resolution
+          const canvas = await html2canvas(container, { scale: 2 });
+          document.body.removeChild(container);
+          const imgData = canvas.toDataURL('image/png');
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF('p', 'mm', 'a4');
+          const imgProps = doc.getImageProperties(imgData);
+          const pdfWidth = doc.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          const filename = data.name ? data.name.replace(/\s+/g, '_') + '_coaching_form.pdf' : 'coaching_form.pdf';
+          // Save the PDF locally for the user as well
+          doc.save(filename);
+          // Return both a data URI and a Blob for further use
+          const dataUri = doc.output('datauristring');
+          const blob = doc.output('blob');
+          return { uri: dataUri, blob: blob };
+        }
+
+        // handle form submission
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          const current = steps[currentStep];
+          const inputs = current.querySelectorAll('input, select, textarea');
+          for (const input of inputs) {
+            if (!input.checkValidity()) {
+              input.reportValidity();
+              return;
+            }
+          }
+          const data = collectFormData();
+          // Optionally generate a PDF for the user to download locally. We do not attempt
+          // to send the PDF via WhatsApp anymore because WhatsApp does not support
+          // attachments through simple URL parameters. The PDF will still download
+          // automatically in the browser when the user submits the form.
+          try {
+            await generatePdfFile(data);
+          } catch (ex) {
+            console.error('PDF generation failed', ex);
+          }
+
+          // Compose the WhatsApp message containing all answers. Include a greeting
+          // and the fields with their translated labels for the selected language.
+          const msgIntro =
+            currentLang === 'ar'
+              ? 'قام ' + data.name + ' بتعبئة نموذج التدريب الشخصي، التفاصيل:\n'
+              : data.name + ' عَمَّرَ فورم التدريب الشخصي، التفاصيل:\n';
+          let details = '';
+          // Build details lines using the labelsForPdf translations
+          Object.keys(data).forEach((key) => {
+            if (!labelsForPdf[currentLang][key]) return;
+            const label = labelsForPdf[currentLang][key];
+            const value = data[key] || '';
+            details += label + ': ' + value + '\n';
+          });
+          const fullMessage = msgIntro + details;
+          const encoded = encodeURIComponent(fullMessage);
+          // Send the full message via WhatsApp (this opens a new tab/window)
+          window.open('https://wa.me/212657994110?text=' + encoded, '_blank');
+          // Show thank you message and hide the form section
+          const thankYou = document.getElementById('thankYouMessage');
+          if (thankYou) {
+            thankYou.style.display = 'block';
+            // Update thank you text for correct language and include a follow-up note
+            const h2 = thankYou.querySelector('h2');
+            const p = thankYou.querySelector('p');
+            if (h2 && p) {
+              if (currentLang === 'ar') {
+                h2.textContent = 'شكرًا! سأتواصل معك في أقرب وقت.';
+                p.textContent = 'تم إرسال معلوماتك بنجاح. سيتم تحويلك إلى الصفحة الرئيسية خلال لحظات.';
+              } else {
+                h2.textContent = 'شكرا! غادي نتاصل بك في أقرب وقت';
+                p.textContent = 'تم إرسال معلوماتك بنجاح. غادي يتم تحويلك للصفحة الرئيسية دابا.';
+              }
+            }
+          }
+          formSection.classList.add('hidden');
+          // Redirect back to home page (index) after a short delay
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 4500);
+        });
+      });
+    </script>
+    <!-- Script to copy email address to clipboard and display toast -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const emailIcons = document.querySelectorAll('a[data-copy-email]');
+        emailIcons.forEach(function (icon) {
+          icon.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            const mail = icon.getAttribute('data-copy-email');
+            if (!mail) return;
+            navigator.clipboard.writeText(mail).then(function () {
+              const existing = document.querySelector('.email-copy-toast');
+              if (existing) existing.remove();
+              const toast = document.createElement('div');
+              toast.className = 'email-copy-toast';
+              toast.textContent = 'تم نسخ البريد الإلكتروني!';
+              document.body.appendChild(toast);
+              setTimeout(function () {
+                toast.remove();
+              }, 3000);
+            });
+          });
+        });
+      });
+    </script>
+    <!-- Site footer -->
+    <footer class="site-footer">
+      <div class="container footer-card">
+        <div class="footer-grid">
+          <div class="footer-col footer-brand">
+            <h3 class="footer-brand-title">GYM&nbsp;LABORATORY</h3>
+            <p class="footer-brand-text">Don't forget to follow us, we post daily content.</p>
+            <div class="footer-social">
+              <a href="https://www.instagram.com/gymlaboo/" class="footer-pill" target="_blank" rel="noopener">Instagram</a>
+              <a href="https://www.facebook.com/profile.php?id=61576849801264" class="footer-pill" target="_blank" rel="noopener">Facebook</a>
+              <a href="https://www.tiktok.com/@gymlaboo" class="footer-pill" target="_blank" rel="noopener">TikTok</a>
+              <a href="https://www.youtube.com/@gymlabo" class="footer-pill" target="_blank" rel="noopener">YouTube</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-title">إكتشف</h4>
+            <ul class="footer-links">
+              <li><a href="index.html#ebook">كتاب Muscle Mastery</a></li>
+              <li><a href="index.html#online">التدريب أونلاين</a></li>
+              <li><a href="blog.html">المدونة</a></li>
+              <li class="footer-contact">
+                <span>تواصل معنا:</span>
+                <!-- Make email icon copy address to clipboard instead of opening mail client -->
+                <a href="#" class="footer-icon" aria-label="Email" data-copy-email="contact.labooo@gmail.com">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20">
+                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                  </svg>
+                </a>
+                <a href="https://wa.me/212657994110" class="footer-icon" target="_blank" rel="noopener" aria-label="WhatsApp">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-title">قانوني</h4>
+            <ul class="footer-links">
+              <li><a href="#" id="terms-link">شروط الخدمة</a></li>
+              <li><a href="#" id="privacy-link">سياسة الخصوصية</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-title">آخر التحديثات لبريدك</h4>
+            <!-- Updated newsletter description to encourage providing email for nutrition and exercise tips -->
+            <p class="footer-muted">ادخل الايميل ديالك باش يوصلوك نصائح حول التغذية و التمرين.</p>
+            <form class="newsletter"
+                  action="https://docs.google.com/forms/d/e/1FAIpQLSf1J3YBh-Xstf0M2CuExO_WGVY75-u4iBIj2NMQHoWoRmXLrg/formResponse"
+                  method="POST"
+                  target="hidden_iframe"
+                  onsubmit="newsletterSuccess()">
+              <input type="email"
+                     name="entry.364924139"
+                     placeholder="أدخل بريدك الإلكتروني"
+                     required />
+              <button type="submit">اشترك</button>
+            </form>
+            <!-- Hidden iframe prevents redirect after submission -->
+            <iframe name="hidden_iframe" style="display:none;"></iframe>
+            <!-- Success message placeholder -->
+            <p id="newsletter-success" class="newsletter-success" style="display:none;"></p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 Gym Laboratory. جميع الحقوق محفوظة.</span>
+          <span class="footer-bottom-dot">•</span>
+          <a href="#top" class="footer-backtop">طلع لفوق ↑</a>
+        </div>
+      </div>
+    </footer>
+    <!-- Legal modal overlay and container (hidden by default) -->
+    <div class="legal-modal-overlay" id="legalOverlay" style="display: none;"></div>
+    <div class="legal-modal" id="legalModal" style="display: none;">
+      <div class="legal-modal-content">
+        <span class="legal-close" id="legalCloseBtn">&times;</span>
+        <h3 id="legalModalTitle"></h3>
+        <div id="legalModalBody" class="legal-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Hidden detailed legal content for Terms of Service and Privacy Policy -->
+    <div id="terms-content" style="display:none;">
+      <p><strong>آخر تحديث:</strong> 07 يناير 2026</p>
+      <p>مرحباً بك في موقع GYM LABORATORY. باستخدامك لهذا الموقع أو أي من خدماته، فإنك تقرّ بأنك قرأت وفهمت ووافقت على هذه الشروط والأحكام.</p>
+      <p><strong>1) التعريفات</strong></p>
+      <p><strong>الموقع:</strong> منصة GYM LABORATORY والمحتوى المرتبط بها.</p>
+      <p><strong>الخدمات:</strong> تشمل المحتوى التعليمي، مكتبة التمارين، المدونة، حاسبة السعرات، التدريب أونلاين، والكتب الرقمية (E‑book).</p>
+      <p><strong>المستخدم:</strong> كل شخص يقوم بزيارة الموقع أو استخدام أي خدمة.</p>
+      <p><strong>المحتوى:</strong> كل النصوص، الصور، البرامج التدريبية، المقالات، الفيديوهات، التمارين، والمواد التعليمية المتاحة على الموقع.</p>
+      <p><strong>2) قبول الشروط</strong><br />باستخدامك للموقع، أنت توافق على الالتزام بهذه الشروط. إذا كنت لا توافق عليها، يجب عليك التوقف عن استخدام الموقع والخدمات فوراً.</p>
+      <p><strong>3) طبيعة الخدمات وعدم ضمان النتائج</strong><br />يقدم موقع GYM LABORATORY محتوى تعليمي وإرشادي في مجال اللياقة والتغذية، ولكن:<br />النتائج تختلف من شخص لآخر حسب الالتزام، العمر، الجينات، الحالة الصحية، نمط الحياة، وغيرها.<br />أي توصيات أو برامج تعتبر توجيهاً عاماً أو مبنية على البيانات المقدمة منك في التدريب الخاص.</p>
+      <p><strong>4) التحذير الصحي والمسؤولية الطبية (مهم جداً)</strong><br />الموقع ليس بديلاً عن الطبيب أو المختص الصحي. باستخدامك لخدماتنا، أنت تقرّ وتوافق على ما يلي:<br />إذا كنت تعاني من أي مرض أو مشكلة صحية (مثل أمراض القلب، الضغط، السكري، إصابات، أو أي حالة طبية) فيجب عليك استشارة طبيبك قبل البدء بأي برنامج أو تمرين أو تغيير غذائي.<br />أنت تستخدم محتوى الموقع والخدمات على مسؤوليتك الشخصية.<br />لا نتحمل أي مسؤولية عن إصابات أو أضرار ناتجة عن سوء التطبيق أو عدم استشارة مختص أو استخدام غير مناسب للمعلومات.</p>
+      <p><strong>5) الكتب الرقمية والتدريب الأونلاين</strong><br />قد نوفر منتجات وخدمات رقمية مثل:<br />كتاب إلكتروني (E‑book)<br />تدريب شخصي/برنامج تدريبي أونلاين<br />وعليه:<br />تعتبر هذه الخدمات رقمية وغير ملموسة.<br />بعد تسليم/إرسال المنتج أو البرنامج للمستخدم، لا يمكن ضمان استرجاعه لأنه محتوى رقمي.</p>
+      <p><strong>6) الدفع وطرق الدفع</strong><br />قد يتم قبول الدفع عبر: PayPal، تحويل بنكي، Western Union (وقد تضاف طرق أخرى مستقبلاً).<br />المستخدم مسؤول عن إدخال البيانات الصحيحة أثناء الدفع وتحمل رسوم التحويل إن وجدت.</p>
+      <p><strong>7) سياسة الاسترجاع (Refund Policy)</strong><br />في الوقت الحالي، لا نقدم سياسة استرجاع واضحة بسبب طبيعة المحتوى الرقمي والخدمات الأونلاين. ومع ذلك، قد يتم النظر في أي طلب في ظروف استثنائية حسب تقديرنا.</p>
+      <p><strong>8) حقوق الملكية الفكرية</strong><br />جميع المحتويات الموجودة على موقع GYM LABORATORY (المقالات، البرامج، التصميم، النصوص، الصور…) هي ملك للموقع. لا يحق نسخ المحتوى أو إعادة نشره أو بيعه دون إذن. يسمح باستخدام النصائح والمعلومات لأغراض شخصية أو تعليمية بهدف نشر الوعي وتحسين مستوى اللياقة في المغرب والعالم العربي، بشرط عدم نسب المحتوى لنفسك أو استخدامه تجارياً.</p>
+      <p><strong>9) الاستخدام الممنوع</strong><br />يمنع على المستخدم استخدام المحتوى في أغراض تجارية دون إذن؛ أو إرسال بيانات أو رسائل مزعجة أو ضارة.</p>
+      <p><strong>10) روابط خارجية</strong><br />قد يحتوي الموقع على روابط لمنصات أخرى مثل Instagram، TikTok، YouTube. نحن غير مسؤولين عن محتوى أو سياسات تلك المواقع.</p>
+      <p><strong>11) تحديث الشروط</strong><br />نحتفظ بحق تعديل شروط الخدمة في أي وقت. يعتبر استمرار استخدامك للموقع بعد التحديث موافقة ضمنية على الشروط الجديدة.</p>
+      <p><strong>12) التواصل والدعم</strong><br />لأي استفسار أو طلب متعلق بالخدمات، يمكنك التواصل معنا عبر البريد الإلكتروني:<br />📩 contact.labooo@gmail.com<br />مدة الرد المتوقعة: من 24 إلى 72 ساعة.</p>
+    </div>
+    <div id="privacy-content" style="display:none;">
+      <p><strong>آخر تحديث:</strong> 07 يناير 2026</p>
+      <p>نحن في GYM LABORATORY نحترم خصوصيتك ونلتزم بحماية بياناتك. توضح هذه السياسة ما نقوم بجمعه من معلومات وكيفية استخدامه.</p>
+      <p><strong>1) المعلومات التي نجمعها</strong></p>
+      <p>نقوم بجمع الحد الأدنى من البيانات فقط، مثل:</p>
+      <p><strong>أ) البريد الإلكتروني (Newsletter)</strong><br />عند اشتراكك في النشرة البريدية، قد نجمع البريد الإلكتروني فقط. ويستخدم ذلك لإرسال نصائح حول التغذية والتمارين وتحديثات حول المقالات والمحتوى الجديد.</p>
+      <p><strong>ب) بيانات التدريب الأونلاين (Coaching)</strong><br />عند ملء استمارة التدريب، قد تقدم معلومات مثل الهدف، الطول والوزن، العمر، مستوى النشاط، معلومات حول التغذية والتمارين، معلومات صحية إن قمت بذكرها. ⚠️ هذه المعلومات تستخدم فقط لتصميم برنامج مناسب لك.</p>
+      <p><strong>2) كيف نستخدم بياناتك</strong><br />نستخدم بياناتك فقط من أجل تقديم خدمات التدريب وبرامج التغذية، إرسال النشرة البريدية لمن وافق عليها، التواصل معك بخصوص خدماتنا.</p>
+      <p><strong>3) عدم مشاركة البيانات</strong><br />نحن لا نبيع ولا نشارك بياناتك الشخصية مع أي طرف ثالث؛ بياناتك تظل خاصة وسرية. قد تكون هناك مشاركة تقنية فقط عند الدفع (مثل PayPal أو التحويل البنكي) لأن تلك الخدمات تحتاج بيانات الدفع لإتمام المعاملة.</p>
+      <p><strong>4) حماية البيانات</strong><br />نلتزم باتخاذ إجراءات أمنية مناسبة لحماية بياناتك من الوصول غير المصرح به أو التسريب أو التعديل.</p>
+      <p><strong>5) ملفات تعريف الارتباط (Cookies)</strong><br />قد يستخدم الموقع ملفات تعريف ارتباط (Cookies) لتحسين تجربة المستخدم، مثل تذكر الوضع الليلي (Dark Mode) وتحسين أداء الموقع.</p>
+      <p><strong>6) حقوق المستخدم</strong><br />يمكنك طلب حذف بريدك من النشرة البريدية في أي وقت، وطلب حذف معلوماتك المتعلقة بالتدريب من خلال مراسلتنا.</p>
+      <p><strong>7) تحديث السياسة</strong><br />قد نقوم بتحديث سياسة الخصوصية عند إضافة خدمات أو ميزات جديدة (مثل الحسابات مستقبلاً). سيتم نشر أي تحديث على هذه الصفحة.</p>
+      <p><strong>8) التواصل</strong><br />لأي طلب متعلق بالخصوصية أو البيانات: 📩 contact.labooo@gmail.com<br />وسيتم الرد خلال 24 إلى 72 ساعة.</p>
+    </div>
+    <!-- Additional script for legal modals and newsletter -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Legal modal elements and hidden content
+        const legalOverlay = document.getElementById('legalOverlay');
+        const legalModal = document.getElementById('legalModal');
+        const legalModalTitle = document.getElementById('legalModalTitle');
+        const legalModalBody = document.getElementById('legalModalBody');
+        const legalCloseBtn = document.getElementById('legalCloseBtn');
+        const termsEl = document.getElementById('terms-content');
+        const privacyEl = document.getElementById('privacy-content');
+
+        /**
+         * Display a legal modal with the given title and HTML body. The html
+         * parameter is pulled from hidden DOM elements containing full terms
+         * and privacy content. Using innerHTML allows preserving formatting.
+         */
+        function showLegal(title, html) {
+          if (legalModalTitle) legalModalTitle.textContent = title;
+          if (legalModalBody) legalModalBody.innerHTML = html;
+          if (legalOverlay) legalOverlay.style.display = 'flex';
+          if (legalModal) legalModal.style.display = 'block';
+        }
+
+        const termsLink = document.getElementById('terms-link');
+        const privacyLink = document.getElementById('privacy-link');
+        if (termsLink && termsEl) {
+          termsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLegal('شروط الخدمة', termsEl.innerHTML);
+          });
+        }
+        if (privacyLink && privacyEl) {
+          privacyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLegal('سياسة الخصوصية', privacyEl.innerHTML);
+          });
+        }
+        // Close modal when clicking on the close button
+        if (legalCloseBtn) {
+          legalCloseBtn.addEventListener('click', () => {
+            if (legalOverlay) legalOverlay.style.display = 'none';
+            if (legalModal) legalModal.style.display = 'none';
+          });
+        }
+        // Close modal when clicking outside of it on the overlay
+        if (legalOverlay) {
+          legalOverlay.addEventListener('click', (evt) => {
+            if (evt.target === legalOverlay) {
+              legalOverlay.style.display = 'none';
+              if (legalModal) legalModal.style.display = 'none';
+            }
+          });
+        }
+        // Newsletter form submission is handled by Google Form. No client-side interception needed here.
+      });
+    </script>
+  </body>
+</html>
