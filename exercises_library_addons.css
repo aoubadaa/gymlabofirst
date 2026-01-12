@@ -192,6 +192,18 @@ body.dark .exlib-clear {
   text-align: center;
 }
 
+/* Responsive tweaks: stack filter rows on narrow screens to avoid horizontal
+   scrolling and make each input easier to tap on mobile devices. */
+@media (max-width: 600px) {
+  .exlib-filter-row {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .exlib-filter-label {
+    margin-bottom: 4px;
+  }
+}
+
 .exlib-filter-label {
   font-weight: 700;
   color: var(--primary-text);

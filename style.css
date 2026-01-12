@@ -2956,3 +2956,120 @@ body.dark .legal-close {
   color: var(--dark-accent);
 }
 
+/*
+ * -----------------------------------------------------------------------
+ * Responsive enhancements
+ *
+ * The following media query introduces a series of layout and typographic
+ * adjustments targeted at small screens. When the viewport width falls
+ * below 768px (roughly tablet and phone sizes) the site previously
+ * experienced horizontal scrolling, oversized icons and text, and an
+ * overall cramped feel. These rules address those issues by reducing
+ * font sizes and padding on navigation links, stacking complex layouts
+ * vertically, and ensuring interactive elements remain comfortably
+ * tappable on touch devices. A few key highlights include:
+ *
+ *  • Preventing horizontal overflow on the body and html elements.
+ *  • Allowing the navigation menu to scroll horizontally while keeping
+ *    links smaller and spacing tighter.
+ *  • Converting multi‑column hero and ebook sections into single‑column
+ *    stacks for better readability on narrow screens.
+ *  • Scaling down buttons, icons and progress indicators without
+ *    sacrificing usability.
+ */
+@media (max-width: 768px) {
+  /* Avoid horizontal scrolling on small devices */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Header layout: allow items to wrap and tighten spacing */
+  .nav-wrapper {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Logo: slightly smaller on mobile */
+  .logo {
+    font-size: 1.1rem;
+  }
+
+  /* Navigation menu: prevent it from forcing the page wider by
+     enabling horizontal scroll and reducing whitespace */
+  .nav-menu {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.4rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.8rem;
+  }
+
+  /* Hero section: stack image below text and center content */
+  .hero-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .hero-text,
+  .hero-image {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-btn,
+  .ghost-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1.2rem;
+  }
+
+  /* Ebook card: stack info and cover vertically for better flow */
+  .ebook-card {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .ebook-info,
+  .ebook-cover {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+  .ebook-badges {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .ebook-cover img {
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  /* Progress indicators: smaller circles on mobile */
+  .progress-step {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  /* Theme switch sizing */
+  .theme-switch .theme-slider {
+    width: 42px;
+    height: 20px;
+  }
+  .theme-icon {
+    font-size: 14px;
+  }
+}
+
