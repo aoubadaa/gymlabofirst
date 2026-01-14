@@ -177,6 +177,56 @@
         margin-bottom: 1rem;
         border-radius: 10px;
       }
+
+      /* ===== Dark mode adjustments =====
+         When the user toggles dark mode, some elements on this page still
+         retain their light backgrounds, making the white text invisible.
+         Override those surfaces to dark colours so the content remains legible. */
+      /* Darken the hero section background in dark mode */
+      body.dark .coaching-hero {
+        background: var(--dark-secondary);
+      }
+      /* Update the “previous” navigation button to suit dark backgrounds */
+      body.dark .prev-btn {
+        background: var(--dark-secondary);
+        color: var(--dark-accent);
+      }
+      body.dark .prev-btn:hover {
+        background: var(--dark-accent);
+        /* Use a dark background on hover to contrast with the accent colour */
+        color: var(--dark-bg);
+      }
+
+      /* ===== Loading state styles =====
+         When the user submits the form, display an animated loading spinner
+         with a message. This helps provide feedback while the PDF is being
+         generated and the WhatsApp message prepared. */
+      #submitLoading {
+        text-align: center;
+        padding: 80px 0;
+      }
+      #submitLoading .loader {
+        margin: 0 auto 20px;
+        border: 5px solid rgba(1, 109, 156, 0.15);
+        border-top: 5px solid var(--accent);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+      /* Dark mode adjustments for the loader */
+      body.dark #submitLoading .loader {
+        border: 5px solid rgba(87, 167, 201, 0.3);
+        border-top: 5px solid var(--dark-accent);
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -216,6 +266,16 @@
             <button id="lang-ar" class="lang-btn">الفصحى العربية</button>
             <button id="lang-dar" class="lang-btn">الدارجة المغربية</button>
           </div>
+        </div>
+      </section>
+
+      <!-- Loading message shown during form submission -->
+      <section id="submitLoading" class="hidden">
+        <div class="container">
+          <div class="loader"></div>
+          <!-- The heading and paragraph will be replaced with the correct language at runtime -->
+          <h2 class="section-title" data-ar="جارٍ إرسال بياناتك..." data-dar="جارٍ إرسال معلوماتك...">جارٍ إرسال بياناتك...</h2>
+          <p class="online-description" data-ar="يتم الآن إرسال النموذج. يرجى الانتظار..." data-dar="كنرسل الفورم دابا، يرجى الانتظار...">يتم الآن إرسال النموذج. يرجى الانتظار...</p>
         </div>
       </section>
 
@@ -967,8 +1027,20 @@
           const offers = offerOptionsEl.querySelectorAll('input[type="radio"]');
           offers.forEach((radio) => {
             radio.addEventListener('change', function () {
-              offerOptionsEl.querySelectorAll('label').forEach((lbl) => lbl.classList.remove('selected'));
+              // Unselect other offer labels and collapse any expanded popups
+              offerOptionsEl.querySelectorAll('label').forEach((lbl) => {
+                lbl.classList.remove('selected');
+                lbl.classList.remove('expanded');
+              });
+              // Mark the chosen label as selected
               this.parentElement.classList.add('selected');
+              // Hide all plan popups so the description disappears after selection
+              offerOptionsEl.querySelectorAll('.plan-popup').forEach((pop) => {
+                // Override inline styles to ensure the popup stays hidden regardless of hover
+                pop.style.opacity = '0';
+                pop.style.visibility = 'hidden';
+                pop.style.pointerEvents = 'none';
+              });
             });
           });
 
@@ -1402,7 +1474,28 @@
               return;
             }
           }
+          // Collect the form data now so we can include it in the PDF and WhatsApp message
           const data = collectFormData();
+          // Show loading feedback: hide the form and display the submit loading section
+          const loadingSection = document.getElementById('submitLoading');
+          if (loadingSection) {
+            // Update loading text based on the selected language
+            const h2 = loadingSection.querySelector('h2');
+            const p = loadingSection.querySelector('p');
+            if (h2 && p) {
+              if (currentLang === 'ar') {
+                h2.textContent = 'جارٍ إرسال بياناتك...';
+                p.textContent = 'يتم الآن إرسال النموذج. يرجى الانتظار...';
+              } else {
+                h2.textContent = 'جارٍ إرسال معلوماتك...';
+                p.textContent = 'كنرسل الفورم دابا، يرجى الانتظار...';
+              }
+            }
+            loadingSection.classList.remove('hidden');
+          }
+          // Hide the form section while processing
+          formSection.classList.add('hidden');
+
           // Optionally generate a PDF for the user to download locally. We do not attempt
           // to send the PDF via WhatsApp anymore because WhatsApp does not support
           // attachments through simple URL parameters. The PDF will still download
@@ -1431,7 +1524,10 @@
           const encoded = encodeURIComponent(fullMessage);
           // Send the full message via WhatsApp (this opens a new tab/window)
           window.open('https://wa.me/212657994110?text=' + encoded, '_blank');
-          // Show thank you message and hide the form section
+          // Hide the loading section and show the thank you message
+          if (loadingSection) {
+            loadingSection.classList.add('hidden');
+          }
           const thankYou = document.getElementById('thankYouMessage');
           if (thankYou) {
             thankYou.style.display = 'block';
@@ -1448,7 +1544,6 @@
               }
             }
           }
-          formSection.classList.add('hidden');
           // Redirect back to home page (index) after a short delay
           setTimeout(() => {
             window.location.href = 'index.html';

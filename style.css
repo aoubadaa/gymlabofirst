@@ -399,6 +399,17 @@ body.dark .blog-grid {
   border-color: rgba(87, 167, 201, 0.25);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
+/* Ensure the horizontal blog slider matches the dark theme.
+   The default blog slider uses a light background and light border to
+   distinguish it on the page. In dark mode this causes the white text and
+   icons to become invisible on white backgrounds. Override its surface
+   colours to a dark card and adjust its border and shadow for proper contrast. */
+body.dark .blog-slider {
+  background: var(--dark-card);
+  /* Mirror the one‑pixel border used in light mode with a dark‑themed colour */
+  border: 1px solid rgba(87, 167, 201, 0.25);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
 
 body.dark .blog-card {
   background: var(--dark-secondary);
